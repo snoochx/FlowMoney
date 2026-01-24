@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:id="@+id/balanceContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:background="@drawable/bg_balance_card"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/tvBalanceTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Баланс"
+            android:textSize="18sp"
+            android:textColor="#444444"
+            android:fontFamily="@font/font"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/tvBalanceAmount"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="0.00"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/font"
+                android:textColor="#000000"
+                android:gravity="start|center_vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/ivToggleBalance"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <ImageView
+                android:id="@+id/ivToggleBalance"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_eye_open"
+                android:contentDescription="Показать / скрыть баланс"
+                app:tint="#555555"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/analyticsContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_balance_card"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@id/balanceContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Аналитика"
+            android:textSize="18sp"
+            android:textColor="#444444"
+            android:fontFamily="@font/font"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Последний месяц"
+            android:textSize="12sp"
+            android:textColor="#888888"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/font"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
+
+            <TextView
+                android:id="@+id/tvMonthIncome"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="+0.00"
+                android:textSize="16sp"
+                android:textColor="#2E7D32"
+                android:fontFamily="@font/font"/>
+
+            <TextView
+                android:id="@+id/tvMonthExpense"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="-0.00"
+                android:textSize="16sp"
+                android:textColor="#C62828"
+                android:gravity="end"
+                android:fontFamily="@font/font"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/savingsContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_balance_card"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@id/analyticsContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/tvSavingsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Сбережения"
+            android:textSize="18sp"
+            android:textColor="#444444"
+            android:fontFamily="@font/font"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp">
+
+            <LinearLayout
+                android:id="@+id/savingInfoContainer"
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tvSavingPercent">
+
+                <TextView
+                    android:id="@+id/tvSavingName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Мой вклад"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:fontFamily="@font/font"/>
+
+                <TextView
+                    android:id="@+id/tvSavingAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.00"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:fontFamily="@font/font"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvSavingPercent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+0.5%"
+                android:textColor="#2E7D32"
+                android:textSize="16sp"
+                android:fontFamily="@font/font"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Добавить"
+        app:srcCompat="@android:drawable/ic_input_add"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
