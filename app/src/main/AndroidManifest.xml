@@ -12,19 +12,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FlowMoney">
         <activity
+            android:name=".ui.account.TransferActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.account.CreateAccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.account.AccountInfoActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.main.AddOperationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.saving.SavingHistoryActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.saving.CreateSavingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.saving.SavingInfoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SavingDetailActivity"
             android:exported="false" />
         <activity
             android:name=".ui.analytics.AnalyticsActivity"

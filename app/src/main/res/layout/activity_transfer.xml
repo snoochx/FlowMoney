@@ -1,0 +1,135 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/bg_balance_card">
+
+            <TextView
+                android:id="@+id/tvTransferTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Перевести средства"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:fontFamily="@font/font"/>
+
+            <!-- Горизонтальный контейнер полей + свап -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical">
+
+                <!-- Поля счетов (80% ширины) -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="8"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/fromAccountContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:orientation="horizontal"
+                        android:padding="12dp"
+                        android:background="@drawable/bg_input"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:id="@+id/tvFromAccount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Выберите счет"
+                            android:textColor="#000000"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/font"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/toAccountContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:orientation="horizontal"
+                        android:padding="12dp"
+                        android:background="@drawable/bg_input"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/tvToAccount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Выберите счет"
+                            android:textColor="#000000"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/font"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Плашка свапа (25% ширины, высота = 2 поля + отступ) -->
+                <LinearLayout
+                    android:id="@+id/swapContainer"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:layout_height="108dp"
+                    android:orientation="vertical"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_input"
+                    android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/btnSwapAccounts"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    app:srcCompat="@drawable/ic_swap"
+                    android:contentDescription="Поменять местами"
+                    android:layout_gravity="center"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Сумма -->
+        <EditText
+            android:id="@+id/etTransferAmount"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Введите сумму"
+            android:inputType="numberDecimal"
+            android:padding="12dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input"
+            android:textColor="#000000"
+            android:fontFamily="@font/font"/>
+
+        <!-- Кнопка перевода -->
+        <Button
+            android:id="@+id/btnSendTransfer"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Отправить"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#2E7D32"
+            android:fontFamily="@font/font"
+            android:layout_marginTop="16dp"/>
+    </LinearLayout>
+</LinearLayout>
+    </ScrollView>

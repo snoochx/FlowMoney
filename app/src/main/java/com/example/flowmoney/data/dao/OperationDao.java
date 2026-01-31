@@ -48,4 +48,6 @@ public interface OperationDao {
     @Query("SELECT * FROM operations ORDER BY date DESC")
     LiveData<List<OperationEntity>> getAllLive();
 
+    @Query("SELECT IFNULL(SUM(CASE WHEN type = 'INCOME' THEN amount ELSE -amount END), 0) FROM operations")
+    double getTotalBalanceSync();
 }
