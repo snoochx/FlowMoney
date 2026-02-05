@@ -2,6 +2,7 @@ package com.example.flowmoney.ui.account;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -32,6 +33,8 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         btnCreate.setOnClickListener(v -> {
             String name = etName.getText().toString().trim();
+            Log.d("CREATE_DEBUG", "btnCreate clicked, name=" + name);
+
             if (name.isEmpty()) {
                 Toast.makeText(this, "Введите название счета", Toast.LENGTH_SHORT).show();
                 return;
@@ -39,6 +42,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
             Executors.newSingleThreadExecutor().execute(() -> {
                 AccountEntity existing = db.accountDao().getByName(name);
+                Log.d("CREATE_DEBUG", "Existing account check: " + (existing != null ? existing.id : "null"));
                 if (existing != null) {
                     runOnUiThread(() ->
                             Toast.makeText(this, "Счет с таким названием уже существует", Toast.LENGTH_SHORT).show()
@@ -52,6 +56,8 @@ public class CreateAccountActivity extends AppCompatActivity {
                 account.isMain = false;
                 long newId = db.accountDao().insert(account);
                 account.id = (int) newId;
+                db.accountDao().update(account);
+                Log.d("CREATE_DEBUG", "Account created: id=" + account.id + " name=" + account.name);
 
                 runOnUiThread(() -> {
                     Toast.makeText(this, "Счет создан", Toast.LENGTH_SHORT).show();

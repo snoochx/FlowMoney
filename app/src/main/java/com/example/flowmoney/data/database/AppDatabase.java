@@ -1,6 +1,7 @@
 package com.example.flowmoney.data.database;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -44,19 +45,28 @@ public abstract class AppDatabase extends RoomDatabase {
                                 @Override
                                 public void onCreate(@NonNull SupportSQLiteDatabase db) {
                                     super.onCreate(db);
+                                    Log.d("DB_DEBUG", "onCreate: база данных создаётся");
 
-                                    // Создаём основной счёт при первом запуске
                                     Executors.newSingleThreadExecutor().execute(() -> {
                                         AppDatabase database = INSTANCE;
-                                        if (database == null) return;
+                                        if (database == null) {
+                                            Log.d("DB_DEBUG", "INSTANCE = null");
+                                            return;
+                                        }
 
-                                        AccountEntity main = new AccountEntity(
-                                                "Основной счёт",
-                                                0.0,
-                                                true
-                                        );
+                                        if (database.accountDao().getMainAccountSync() == null) {
+                                            AccountEntity main = new AccountEntity(
+                                                    "Основной счёт",
+                                                    0.0,
+                                                    true
+                                            );
 
-                                        database.accountDao().insert(main);
+                                            long id = database.accountDao().insert(main);
+                                            main.id = (int) id;
+
+                                            database.accountDao().update(main);
+                                            Log.d("DB_DEBUG", "Основной счёт создан, id=" + main.id);
+                                        }
                                     });
                                 }
                             })

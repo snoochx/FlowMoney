@@ -6,38 +6,37 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.flowmoney.R;
 import com.example.flowmoney.data.entity.AccountEntity;
+
 import java.util.List;
 
 public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final List<AccountEntity> accounts;
     private final Activity activity;
-    private final OnAddAccountClickListener addAccountClickListener;
 
     private static final int TYPE_ACCOUNT = 0;
     private static final int TYPE_EMPTY = 1;
 
-    public interface OnAddAccountClickListener {
-        void onAddAccountClick();
-    }
-
-    public AccountsAdapter(Activity activity, List<AccountEntity> accounts, OnAddAccountClickListener listener) {
+    public AccountsAdapter(Activity activity, List<AccountEntity> accounts) {
         this.activity = activity;
         this.accounts = accounts;
-        this.addAccountClickListener = listener;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(activity).inflate(R.layout.item_account, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_account, parent, false);
         if (viewType == TYPE_ACCOUNT) {
             return new AccountViewHolder(view);
         } else {
+            view.setClickable(false);
+            view.setFocusable(false);
             return new EmptyViewHolder(view);
         }
     }
@@ -74,18 +73,10 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         void bind(AccountEntity account) {
-            if (account == null) {
-                tvName.setText("");
-                tvBalance.setText("");
-                itemView.setOnClickListener(null);
-                return;
-            }
+            if (account == null) return;
 
             tvName.setText(account.name != null ? account.name : "");
             tvBalance.setText(String.format("Баланс: %.2f", account.balance));
-
-            itemView.setClickable(true);
-            itemView.setFocusable(true);
 
             itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(activity, AccountInfoActivity.class);
@@ -94,6 +85,7 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             });
         }
     }
+
 
     class EmptyViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvBalance;

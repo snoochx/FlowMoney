@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -14,9 +15,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.flowmoney.R;
+import com.example.flowmoney.data.CategoryType;
 import com.example.flowmoney.data.entity.OperationEntity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
+
+import java.util.List;
 
 public class AddOperationActivity extends AppCompatActivity {
     private EditText etAmount, etComment;
@@ -25,6 +29,7 @@ public class AddOperationActivity extends AppCompatActivity {
     private MaterialButton btnExpenses, btnIncome;
     private MainViewModel viewModel;
     private AutoCompleteTextView actvCategory;
+    private androidx.appcompat.app.AlertDialog categoryDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,22 +47,9 @@ public class AddOperationActivity extends AppCompatActivity {
         btnExpenses = findViewById(R.id.btnExpenses);
         btnIncome = findViewById(R.id.btnIncome);
 
-        CategoryAdapter adapter = new CategoryAdapter(this);
-        actvCategory.setAdapter(adapter);
-
-        actvCategory.setOnClickListener(v -> {
-            if (actvCategory.isPopupShowing()) {
-                actvCategory.dismissDropDown();
-            } else {
-                actvCategory.showDropDown();
-            }
-        });
-
-        actvCategory.post(() -> {
-            actvCategory.setDropDownWidth(actvCategory.getWidth());
-        });
-
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+
+        actvCategory.setOnClickListener(v -> showCategoryPickerDialog());
 
         setToggleButtonColors(toggleGroup.getCheckedButtonId());
         toggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
@@ -68,6 +60,51 @@ public class AddOperationActivity extends AppCompatActivity {
         btnSave.setOnClickListener(v -> saveOperation());
     }
 
+    private void showCategoryPickerDialog() {
+        List<CategoryType> categories = List.of(CategoryType.values());
+
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_select_category, null);
+        androidx.recyclerview.widget.RecyclerView rvCategories = dialogView.findViewById(R.id.rvCategories);
+
+        CategoryPickerAdapter adapter = new CategoryPickerAdapter(categories, category -> {
+            actvCategory.setText(category.title);
+            categoryDialog.dismiss();
+        });
+
+        rvCategories.setAdapter(adapter);
+        rvCategories.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
+
+        rvCategories.addItemDecoration(new androidx.recyclerview.widget.DividerItemDecoration(this,
+                androidx.recyclerview.widget.DividerItemDecoration.VERTICAL) {
+            @Override
+            public void onDraw(android.graphics.Canvas c,
+                               androidx.recyclerview.widget.RecyclerView parent,
+                               androidx.recyclerview.widget.RecyclerView.State state) {
+                int childCount = parent.getChildCount();
+                for (int i = 0; i < childCount - 1; i++) {
+                    android.view.View child = parent.getChildAt(i);
+                    int left = parent.getPaddingLeft();
+                    int right = parent.getWidth() - parent.getPaddingRight();
+                    android.view.ViewGroup.MarginLayoutParams params = (android.view.ViewGroup.MarginLayoutParams) child.getLayoutParams();
+                    int top = child.getBottom() + params.bottomMargin;
+                    int bottom = top + 1;
+
+                    android.graphics.Paint paint = new android.graphics.Paint();
+                    paint.setColor(android.graphics.Color.parseColor("#DDDDDD"));
+                    c.drawRect(left, top, right, bottom, paint);
+                }
+            }
+        });
+
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setView(dialogView);
+
+        categoryDialog = builder.create();
+        if (categoryDialog.getWindow() != null) {
+            categoryDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+        categoryDialog.show();
+    }
 
     private void saveOperation() {
         String amountStr = etAmount.getText().toString().trim();

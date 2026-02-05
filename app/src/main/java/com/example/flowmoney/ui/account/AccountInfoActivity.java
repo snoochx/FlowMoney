@@ -3,7 +3,7 @@ package com.example.flowmoney.ui.account;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ImageView;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -80,6 +80,27 @@ public class AccountInfoActivity extends AppCompatActivity {
 
             tvAccountName.setText(account.name);
             tvAccountBalance.setText(String.format(java.util.Locale.US, "%.2f", account.balance));
+
+            LinearLayout.LayoutParams paramsTransfer = (LinearLayout.LayoutParams) btnTransfer.getLayoutParams();
+            LinearLayout.LayoutParams paramsClose = (LinearLayout.LayoutParams) btnCloseAccount.getLayoutParams();
+
+            if (account.isMain) {
+                btnCloseAccount.setVisibility(View.GONE);
+
+                paramsTransfer.weight = 1f;
+                paramsTransfer.rightMargin = 0;
+                btnTransfer.setLayoutParams(paramsTransfer);
+            } else {
+                btnCloseAccount.setVisibility(View.VISIBLE);
+
+                paramsTransfer.weight = 1f;
+                paramsTransfer.rightMargin = getResources().getDimensionPixelSize(R.dimen.account_buttons_margin);
+                btnTransfer.setLayoutParams(paramsTransfer);
+
+                paramsClose.weight = 1f;
+                paramsClose.rightMargin = 0;
+                btnCloseAccount.setLayoutParams(paramsClose);
+            }
         });
     }
 }

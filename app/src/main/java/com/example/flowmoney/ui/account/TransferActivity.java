@@ -2,7 +2,6 @@ package com.example.flowmoney.ui.account;
 
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.example.flowmoney.R;
 import com.example.flowmoney.data.database.AppDatabase;
@@ -28,15 +28,12 @@ public class TransferActivity extends AppCompatActivity {
     private EditText etTransferAmount;
     private Button btnSendTransfer;
     private ImageView btnSwapAccounts;
-
     private LinearLayout fromContainer, toContainer;
     private AppDatabase db;
-
     private List<AccountEntity> accountsList = new ArrayList<>();
     private AccountEntity fromAccount, toAccount;
-    private AccountEntity mainBalanceAccount; // виртуальный основной баланс
-
-    private double mainBalance = 0.0; // текущий баланс из MainActivity через intent
+    private AlertDialog alertDialog;
+    private double mainBalance = 0.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +69,6 @@ public class TransferActivity extends AppCompatActivity {
                 tvFromAccount.setText(fromAccount.name);
             }
             if (toAccount == null) {
-                // Берём первый счёт не основной
                 for (AccountEntity acc : accountsList) {
                     if (!acc.isMain) {
                         toAccount = acc;
@@ -83,7 +79,6 @@ public class TransferActivity extends AppCompatActivity {
             }
         });
 
-        // Swap кнопка с анимацией
         btnSwapAccounts.setOnClickListener(v -> {
             ObjectAnimator rotate = ObjectAnimator.ofFloat(btnSwapAccounts, "rotation", 0f, 180f);
             rotate.setDuration(200);
@@ -91,11 +86,8 @@ public class TransferActivity extends AppCompatActivity {
             swapAccounts();
         });
 
-        // Клик по счетам для выбора
         fromContainer.setOnClickListener(v -> showAccountPicker(true));
         toContainer.setOnClickListener(v -> showAccountPicker(false));
-
-        // Кнопка перевода
         btnSendTransfer.setOnClickListener(v -> sendTransfer());
     }
 
@@ -111,71 +103,75 @@ public class TransferActivity extends AppCompatActivity {
     private void showAccountPicker(boolean isFrom) {
         if (accountsList.isEmpty()) return;
 
-        String[] names = new String[accountsList.size()];
-        for (int i = 0; i < accountsList.size(); i++) names[i] = accountsList.get(i).name;
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_select_account, null);
+        androidx.recyclerview.widget.RecyclerView rvAccounts = dialogView.findViewById(R.id.rvAccounts);
 
-        new AlertDialog.Builder(this)
-                .setTitle("Выберите счет")
-                .setItems(names, (dialog, which) -> {
-                    if (isFrom) {
-                        fromAccount = accountsList.get(which);
-                        tvFromAccount.setText(fromAccount.name);
-                    } else {
-                        toAccount = accountsList.get(which);
-                        tvToAccount.setText(toAccount.name);
-                    }
-                })
-                .show();
+        AccountsPickerAdapter adapter = new AccountsPickerAdapter(accountsList, account -> {
+            if (isFrom) {
+                fromAccount = account;
+                tvFromAccount.setText(account.name);
+            } else {
+                toAccount = account;
+                tvToAccount.setText(account.name);
+            }
+            alertDialog.dismiss();
+        });
+
+        rvAccounts.setAdapter(adapter);
+        rvAccounts.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
+
+        rvAccounts.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL) {
+            @Override
+            public void onDraw(android.graphics.Canvas c, androidx.recyclerview.widget.RecyclerView parent, androidx.recyclerview.widget.RecyclerView.State state) {
+                int childCount = parent.getChildCount();
+                for (int i = 0; i < childCount - 1; i++) {
+                    android.view.View child = parent.getChildAt(i);
+                    int left = parent.getPaddingLeft();
+                    int right = parent.getWidth() - parent.getPaddingRight();
+                    android.view.ViewGroup.MarginLayoutParams params = (android.view.ViewGroup.MarginLayoutParams) child.getLayoutParams();
+                    int top = child.getBottom() + params.bottomMargin;
+                    int bottom = top + 1;
+
+                    android.graphics.Paint paint = new android.graphics.Paint();
+                    paint.setColor(android.graphics.Color.parseColor("#DDDDDD"));
+                    c.drawRect(left, top, right, bottom, paint);
+                }
+            }
+        });
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogView);
+
+        alertDialog = builder.create();
+        if (alertDialog.getWindow() != null) {
+            alertDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+        alertDialog.show();
     }
 
     private void sendTransfer() {
-        String amountStr = etTransferAmount.getText().toString().trim();
-        if (amountStr.isEmpty()) {
-            Toast.makeText(this, "Введите сумму", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        double amount = Double.parseDouble(etTransferAmount.getText().toString());
 
-        double amount;
-        try {
-            amount = Double.parseDouble(amountStr);
-        } catch (Exception e) {
-            Toast.makeText(this, "Некорректная сумма", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (fromAccount == null || toAccount == null) {
-            Toast.makeText(this, "Выберите оба счета", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (fromAccount.id == toAccount.id) {
-            Toast.makeText(this, "Счета должны быть разными", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (fromAccount.id == 0 && amount > mainBalance) {
-            Toast.makeText(this, "Недостаточно средств на основном балансе", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (fromAccount.id != 0 && amount > fromAccount.balance) {
-            Toast.makeText(this, "Недостаточно средств на счете", Toast.LENGTH_SHORT).show();
+        if (fromAccount.balance < amount) {
+            runOnUiThread(() ->
+                    Toast.makeText(this, "Недостаточно средств", Toast.LENGTH_SHORT).show()
+            );
             return;
         }
 
         Executors.newSingleThreadExecutor().execute(() -> {
-            // перевод
-            if (fromAccount.id == 0) mainBalance -= amount;
-            else fromAccount.balance -= amount;
+            AccountEntity from = db.accountDao().getByIdSync(fromAccount.id);
+            AccountEntity to = db.accountDao().getByIdSync(toAccount.id);
 
-            if (toAccount.id == 0) mainBalance += amount;
-            else toAccount.balance += amount;
+            from.balance -= amount;
+            to.balance += amount;
 
-            if (fromAccount.id != 0) db.accountDao().update(fromAccount);
-            if (toAccount.id != 0) db.accountDao().update(toAccount);
+            db.accountDao().update(from);
+            db.accountDao().update(to);
 
             runOnUiThread(() -> {
                 Toast.makeText(this, "Перевод выполнен", Toast.LENGTH_SHORT).show();
+                setResult(RESULT_OK);
                 finish();
             });
         });

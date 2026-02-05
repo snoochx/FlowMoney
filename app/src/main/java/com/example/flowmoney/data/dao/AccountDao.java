@@ -1,5 +1,7 @@
 package com.example.flowmoney.data.dao;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -39,6 +41,9 @@ public interface AccountDao {
 
     @Query("SELECT * FROM accounts WHERE isMain = 1 LIMIT 1")
     LiveData<AccountEntity> getMainAccount();
+
+    @Query("SELECT * FROM accounts WHERE id = :id LIMIT 1")
+    AccountEntity getByIdSync(int id);
 
     @Query("SELECT * FROM accounts WHERE isMain = 1 LIMIT 1")
     AccountEntity getMainAccountSync();
